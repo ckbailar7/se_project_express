@@ -12,6 +12,8 @@ const {
 
 // Routes
 
+//router.post("/", createItem);
+
 // Route 1 GET /items — returns all clothing items
 
 router.get("/items", getClothingItems);
@@ -24,3 +26,5 @@ router.post("/items", createClothingItem);
 // Route 3 DELETE /items/:itemId — deletes an item by _id
 
 router.delete("/items/:itemId", deleteClothingItem);
+
+module.exports = router;

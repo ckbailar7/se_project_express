@@ -5,14 +5,14 @@ const router = require("express").Router();
 const { getAllUsers, getUser, createUser } = require("../controllers/users");
 
 // Route 1 GET /users — returns all users
-router.get("/users", getAllUsers);
+router.get("/", getAllUsers);
 
 // Route 2 GET /users/:userId - returns a user by _id
 
-router.get("/users:id", getUser);
+router.get("/:id", getUser);
 
 // Route 3 POST /users — creates a new user Two fields "In the body of the POST request for creating a user, pass a JSON object with two fields: name and avatar."
 
-router.post("/users", createUser);
+router.post("/", createUser);
 
 module.exports = router;

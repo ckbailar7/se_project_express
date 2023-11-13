@@ -21,7 +21,8 @@
   "homepage": "https://github.com/ckbailar7/duo_ExpressProj#readme",
   "dependencies": {
     "express": "^4.18.2",
-    "mongoose": "^6.6.1"
+    "mongoose": "^6.6.1",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "eslint": "^8.53.0",
