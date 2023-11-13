@@ -7,6 +7,10 @@ const ERRORS = require("../utils/errors");
 
 module.exports.getAllUsers = (req, res) => {
   User.find({})
+    .orFail(() => {
+      const error = new Error("Where did they go ?");
+      error.Statuscode = 404;
+    })
 
     .then((allUsers) => res.send({ data: allUsers }))
 
@@ -19,13 +23,18 @@ module.exports.getAllUsers = (req, res) => {
       } else {
         res
           .status(ERRORS.DEFAULT_ERROR.STATUS)
-          .send({ message: DEFAULT_ERROR.DEFAULT_MESSAGE });
+          .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
       }
     });
 };
 //res.status(500).send({ message: "Error occured in route /users", err }),
 module.exports.getUser = (req, res) => {
   User.findById(req.params.id)
+    .orFail(() => {
+      const error = new Error("Could not find that User!");
+      error.Statuscode = 400;
+    })
+
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "Cast Error") {

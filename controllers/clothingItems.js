@@ -18,6 +18,10 @@ const ERRORS = require("../utils/errors");
 
 module.exports.getClothingItems = (req, res) => {
   ClothingItem.find({})
+    .orFail(() => {
+      const error = new Error("Error from getClothingItems Not Found");
+      error.Statuscode = 404;
+    })
     .then((items) => {
       res.send({
         data: items,
@@ -59,6 +63,10 @@ module.exports.createClothingItem = (req, res) => {
 
 module.exports.deleteClothingItem = (req, res) => {
   ClothingItem.findByIdAndDelete(req.params.id)
+    .orFail(() => {
+      const error = new Error("Could not find that User!");
+      error.Statuscode = 400;
+    })
     .then((deletedItem) => res.send({ data: deletedItem }))
     .catch((err) => {
       if (err.name === "Not Found") {
@@ -72,3 +80,33 @@ module.exports.deleteClothingItem = (req, res) => {
       }
     });
 };
+
+module.exports.likeClothingItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }, //adds _id to the array if its not there yet
+  );
+};
+
+module.exports.dislikeClothingItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } },
+    { new: true }, //adds _id to the array if its not there yet
+  );
+};
+
+// module.exports.likeItem = (req, res) => ClothingItem.findByIdAndUpdate(
+//   req.params.itemId,
+//   { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
+//   { new: true },
+// )
+// //...
+
+// module.exports.dislikeItem = (req, res) => ClothingItem.findByIdAndUpdate(
+//   req.params.itemId,
+//   { $pull: { likes: req.user._id } }, // remove _id from the array
+//   { new: true },
+// )
+// //...

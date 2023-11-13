@@ -8,6 +8,8 @@ const {
   getClothingItems,
   createClothingItem,
   deleteClothingItem,
+  likeClothingItem,
+  dislikeClothingItem,
 } = require("../controllers/clothingItems");
 
 // Routes
@@ -27,4 +29,10 @@ router.post("/items", createClothingItem);
 
 router.delete("/items/:itemId", deleteClothingItem);
 
+// PUT /items/:itemId/likes — like an item
+// DELETE /items/:itemId/likes — unlike an item
+
+router.put("/items:itemId/likes", likeClothingItem);
+
+router.delete("/items/:itemId/likes", dislikeClothingItem);
 module.exports = router;
