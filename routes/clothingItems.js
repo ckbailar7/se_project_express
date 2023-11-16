@@ -18,21 +18,21 @@ const {
 
 // Route 1 GET /items — returns all clothing items
 
-router.get("/items", getClothingItems);
+router.get("/", getClothingItems);
 
 // Route 2 POST /items — creates a new item
 // user should be able to send an item name, weather type, and image URL. They will be passed to the server as a JSON object. You will also need a user ID for the owner field. Move on to the next step to add a user object to each request.
 
-router.post("/items", createClothingItem);
+router.post("/", createClothingItem);
 
 // Route 3 DELETE /items/:itemId — deletes an item by _id
 
-router.delete("/items/:itemId", deleteClothingItem);
+router.delete("/:itemId", deleteClothingItem);
 
 // PUT /items/:itemId/likes — like an item
 // DELETE /items/:itemId/likes — unlike an item
 
-router.put("/items:itemId/likes", likeClothingItem);
+router.put("/:itemId/likes", likeClothingItem);
 
-router.delete("/items/:itemId/likes", dislikeClothingItem);
+router.delete("/:itemId/likes", dislikeClothingItem);
 module.exports = router;
