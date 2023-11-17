@@ -73,28 +73,29 @@ module.exports.createClothingItem = (req, res) => {
 
 module.exports.deleteClothingItem = (req, res) => {
   const { itemId } = req.params;
+  console.log(req.params);
   const userId = req.user._id;
   console.log("req.user._id :>>>", userId);
 
-  ClothingItem.findByIdAndRemove(userId)
-    .orFail(() => {
-      const error = new Error("User Does Not Exist");
-      error.status = 400;
-      throw error;
-    })
+  ClothingItem.findByIdAndRemove(itemId)
+    .orFail()
     .then((deletedItem) => res.send({ data: deletedItem }))
     .catch((err) => {
       console.log("Catch Statement: <><><><><><><>");
-      if (err.name === "Not Found") {
+      if (err.name === "Not Found" || err.name === "DocumentNotFoundError") {
         res
           .status(ERRORS.NOT_FOUND.STATUS)
           .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
-      } else if (err.name === "DocumentNotFoundError") {
-        console.log();
+      } else if (err.name === "CastError") {
         res
           .status(ERRORS.INVALID_REQUEST.STATUS)
           .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
+      } else if (err.name === "Error") {
+        res
+          .status(ERRORS.NOT_FOUND.STATUS)
+          .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
       } else {
+        console.log("Error name from catch statement: >>>", err.name);
         res
           .status(ERRORS.DEFAULT_ERROR.STATUS)
           .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE, err });
