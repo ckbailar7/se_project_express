@@ -1,10 +1,10 @@
 module.exports = {
   INVALID_REQUEST: {
-    STATUS: 400, // if (err.name === 'Validation Error)
+    STATUS: 400,
     DEFAULT_MESSAGE: "INVALID REQUEST SENT",
   },
   NOT_FOUND: {
-    STATUS: 404, // if (err.name === "Cast Error")
+    STATUS: 404,
     DEFAULT_MESSAGE: "RESOURCE NOT FOUND ",
   },
   DEFAULT_ERROR: {

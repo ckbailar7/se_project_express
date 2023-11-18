@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-//installing validator
 const validator = require("validator");
 
 const user = new mongoose.Schema({

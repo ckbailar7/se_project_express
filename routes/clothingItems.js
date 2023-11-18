@@ -1,8 +1,4 @@
-// Create a router
-
 const router = require("express").Router();
-
-// Import controllers
 
 const {
   getClothingItems,
@@ -14,7 +10,7 @@ const {
 
 // Routes
 
-//router.post("/", createItem);
+// router.post("/", createItem);
 
 // Route 1 GET /items — returns all clothing items
 
@@ -28,9 +24,6 @@ router.post("/", createClothingItem);
 // Route 3 DELETE /items/:itemId — deletes an item by _id
 
 router.delete("/:itemId", deleteClothingItem);
-
-// PUT /items/:itemId/likes — like an item
-// DELETE /items/:itemId/likes — unlike an item
 
 router.put("/:itemId/likes", likeClothingItem);
 

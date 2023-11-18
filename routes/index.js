@@ -8,8 +8,6 @@ router.use("/items", clothingItems);
 router.use("/users", users);
 
 router.use((req, res) => {
-  console.log(req.body);
-
   res
     .status(ERRORS.NOT_FOUND.STATUS)
     .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
