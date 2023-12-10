@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/ckbailar7/duo_ExpressProj#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^6.6.1",
     "validator": "^13.11.0"
   },

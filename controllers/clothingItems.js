@@ -36,7 +36,14 @@ module.exports.createClothingItem = (req, res) => {
 };
 
 module.exports.deleteClothingItem = (req, res) => {
+  const userId = req.user._id;
+
   const { itemId } = req.params;
+
+  if (itemId === userId) {
+    console.log("ERROR from delete clothing item");
+    res.status(ERRORS.FORBIDDEN.STATUS).send(ERRORS.FORBIDDEN.DEFAULT_MESSAGE);
+  }
 
   ClothingItem.findByIdAndRemove(itemId)
     .orFail()

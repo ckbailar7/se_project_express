@@ -3,6 +3,16 @@ module.exports = {
     STATUS: 400,
     DEFAULT_MESSAGE: "INVALID REQUEST SENT",
   },
+
+  INVALID_LOGIN_REQUEST: {
+    STATUS: 400,
+    DEFAULT_MESSAGE: "User email or password in missing or incorrect",
+  },
+  FORBIDDEN: {
+    STATUS: 403,
+    DEFAULT_MESSAGE: "FORBIDDEN REQUEST",
+  },
+
   NOT_FOUND: {
     STATUS: 404,
     DEFAULT_MESSAGE: "RESOURCE NOT FOUND ",
