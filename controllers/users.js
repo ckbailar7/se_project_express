@@ -1,10 +1,13 @@
 const bcrypt = require("bcrypt"); // importing bcrypt// importing bcrypt
 const jwt = require("jsonwebtoken");
+// const { validationResult } = require("express-validator/check");
 
 const User = require("../models/user");
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const ERRORS = require("../utils/errors");
-const JWT_SECRET = require("../utils/config");
+// const JWT_SECRET = require("../utils/config");
+const errors = require("../utils/errors");
 
 module.exports.getAllUsers = (req, res) => {
   User.find({})
@@ -25,7 +28,7 @@ module.exports.getUser = (req, res) => {
 
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === "ValidationError" || err.name === "CastError") {
         res
           .status(ERRORS.INVALID_REQUEST.STATUS)
           .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
@@ -47,7 +50,7 @@ module.exports.getCurrentUser = (req, res) => {
     .orFail()
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === "CastError") {
+      if (err.name === "validatorError" || err.name === "CastError") {
         console.err(err);
         res
           .status(ERRORS.INVALID_REQUEST.STATUS)
@@ -96,19 +99,29 @@ module.exports.updateUserProfile = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
   if (!email || !password) {
-    res.status(401).send({ message: "incorrect email or password" });
+    res.status(400).send({ message: "incorrect email or password" });
   }
-  return bcrypt
-    .hash(password, 10)
-    .then((hash) => {
-      User.create({ name, about, avatar, email, password: hash });
+
+  User.findOne({ email })
+    .then((user) => {
+      // Checking to see if the user already exists in the database
+      if (user) {
+        return res
+          .status(409)
+          .send({ message: "User with this email already exists" });
+      }
+      bcrypt.hash(password, 10).then((hash) =>
+        User.create({ name, about, avatar, email, password: hash }).then(
+          ({ name, about, avatar, email }) => {
+            return res.status(200).send({ name, about, avatar, email });
+          },
+        ),
+      );
     })
-    .then((user) => res.send(user))
 
     .catch((err) => {
-      console.log(err);
-      if (err.name === "ValidationError") {
-        console.log(err.name);
+      if (err.name === "ValidationError" || err.name === "CastError") {
+        console.error(err);
         return res
           .status(ERRORS.INVALID_REQUEST.STATUS)
           .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
@@ -117,7 +130,6 @@ module.exports.createUser = (req, res) => {
           .status(ERRORS.INVALID_LOGIN_REQUEST.STATUS)
           .send({ message: ERRORS.INVALID_LOGIN_REQUEST.DEFAULT_MESSAGE });
       } else {
-        console.log("ERROR NAME LOCATION <><><><><><><><>");
         res
           .status(ERRORS.DEFAULT_ERROR.STATUS)
           .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
@@ -126,8 +138,60 @@ module.exports.createUser = (req, res) => {
     });
 };
 
+// module.exports.createUserCHECKCHECK = (req, res) => {
+//   const { name, about, avatar, email, password } = req.body;
+//   if (!email || !password) {
+//     res.status(400).send({ message: "incorrect email or password" });
+//   }
+//   User.findOne({ email })
+//     .then((user) => {
+//       if (user) {
+//         return res
+//           .status(409)
+//           .send({ message: "User with this email already exists" });
+//       }
+//       bcrypt.hash(password, 10)
+//       .then((hash) => {
+//       User.create({ name, about, avatar, email, password: hash })
+//         .then((data) => res.status(200).send({data: data})
+//     }
+//   })
+//         .catch((err) => {
+//           console.log(err.name, "ERROR NAME HERE <><><><<><><><><><><><><>");
+//           console.log("TESTING LOCATION", err);
+
+//           if (err.name === "ValidationError" || err.name === "CastError") {
+//             console.log(err.name);
+//             console.log("error CHECK Validation and Cast<><><><><><>");
+//             return res
+//               .status(ERRORS.INVALID_REQUEST.STATUS)
+//               .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
+//           } else if (err.status === 11000) {
+//             res
+//               .status(ERRORS.INVALID_LOGIN_REQUEST.STATUS)
+//               .send({ message: ERRORS.INVALID_LOGIN_REQUEST.DEFAULT_MESSAGE });
+//           } else {
+//             console.log("ERROR NAME LOCATION <><><><><><><><>");
+//             res
+//               .status(ERRORS.DEFAULT_ERROR.STATUS)
+//               .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
+//             return err;
+//           }
+//           res
+//             .status(ERRORS.INVALID_REQUEST.STATUS)
+//             .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
+//         });
+//     );
+// };
+
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    res
+      .status(ERRORS.INVALID_LOGIN_REQUEST.STATUS)
+      .send({ message: ERRORS.INVALID_LOGIN_REQUEST.DEFAULT_MESSAGE });
+  }
 
   return User.findUserByCredentials(email, password)
 

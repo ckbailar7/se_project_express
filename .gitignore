@@ -9,6 +9,10 @@ node_modules
 # Optional npm cache directory
 .npm
 
+
+# env file
+.env
+
 # System files and IDE settings folders
 .DS_Store
 .idea
