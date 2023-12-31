@@ -102,40 +102,41 @@ module.exports.createUser = (req, res) => {
     res.status(400).send({ message: "incorrect email or password" });
   }
 
-  User.findOne({ email })
-    .then((user) => {
-      // Checking to see if the user already exists in the database
-      if (user) {
-        return res
-          .status(409)
-          .send({ message: "User with this email already exists" });
-      }
-      bcrypt.hash(password, 10).then((hash) =>
+  return User.findOne({ email }).then((user) => {
+    // Checking to see if the user already exists in the database
+    if (user) {
+      return res
+        .status(409)
+        .send({ message: "User with this email already exists" });
+    }
+
+    return bcrypt
+      .hash(password, 10)
+      .then((hash) =>
         User.create({ name, about, avatar, email, password: hash }).then(
           ({ name, about, avatar, email }) => {
             return res.status(200).send({ name, about, avatar, email });
           },
         ),
-      );
-    })
-
-    .catch((err) => {
-      if (err.name === "ValidationError" || err.name === "CastError") {
-        console.error(err);
-        return res
-          .status(ERRORS.INVALID_REQUEST.STATUS)
-          .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
-      } else if (err.status === 11000) {
-        res
-          .status(ERRORS.INVALID_LOGIN_REQUEST.STATUS)
-          .send({ message: ERRORS.INVALID_LOGIN_REQUEST.DEFAULT_MESSAGE });
-      } else {
-        res
-          .status(ERRORS.DEFAULT_ERROR.STATUS)
-          .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
-        return err;
-      }
-    });
+      )
+      .catch((err) => {
+        if (err.name === "ValidationError" || err.name === "CastError") {
+          console.error(err);
+          return res
+            .status(ERRORS.INVALID_REQUEST.STATUS)
+            .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
+        } else if (err.status === 11000) {
+          res
+            .status(ERRORS.INVALID_LOGIN_REQUEST.STATUS)
+            .send({ message: ERRORS.INVALID_LOGIN_REQUEST.DEFAULT_MESSAGE });
+        } else {
+          res
+            .status(ERRORS.DEFAULT_ERROR.STATUS)
+            .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
+          return err;
+        }
+      });
+  });
 };
 
 // module.exports.createUserCHECKCHECK = (req, res) => {
