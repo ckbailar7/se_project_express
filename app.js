@@ -20,9 +20,9 @@ mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 // });
 
 app.post("/signup", createUser);
+app.use(auth);
 app.post("/signin", login);
 
-app.use(auth);
 app.use(routes);
 app.use(cors());
 

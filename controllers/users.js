@@ -96,10 +96,11 @@ module.exports.updateUserProfile = (req, res) => {
   );
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
   if (!email || !password) {
     res.status(400).send({ message: "incorrect email or password" });
+    return;
   }
 
   return User.findOne({ email }).then((user) => {
@@ -121,7 +122,7 @@ module.exports.createUser = (req, res) => {
       )
       .catch((err) => {
         if (err.name === "ValidationError" || err.name === "CastError") {
-          console.error(err);
+          //console.error(err);
           return res
             .status(ERRORS.INVALID_REQUEST.STATUS)
             .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
@@ -185,7 +186,7 @@ module.exports.createUser = (req, res) => {
 //     );
 // };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
