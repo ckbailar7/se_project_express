@@ -1,3 +1,5 @@
+const auth = require("../middlewares/auth");
+
 // creating a router
 const router = require("express").Router();
 
@@ -24,7 +26,7 @@ const {
 //now we create a user by signing up
 
 //CREATE GET/users/me ROUTE STEP 6 Proj 13<><><>
-router.get("/users/me", getCurrentUser);
+router.get("/users/me", auth, getCurrentUser);
 
 // STEP 7 <><><> PATCH /users/me — update profile
 //router.patch("/users/me", updateUser);

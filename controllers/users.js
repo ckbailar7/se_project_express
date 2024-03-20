@@ -7,9 +7,9 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 
 const ERRORS = require("../utils/errors");
 // const JWT_SECRET = require("../utils/config");
-const errors = require("../utils/errors");
 
 module.exports.getAllUsers = (req, res) => {
+  console.log("getUser all data test ...");
   User.find({})
 
     .then((allUsers) => res.send({ data: allUsers }))
@@ -100,6 +100,7 @@ module.exports.createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
   if (!email || !password) {
     res.status(400).send({ message: "incorrect email or password" });
+    //RETURN STATEMENT NEEDED <><>
     return;
   }
 
@@ -190,7 +191,7 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res
+    return res
       .status(ERRORS.INVALID_LOGIN_REQUEST.STATUS)
       .send({ message: ERRORS.INVALID_LOGIN_REQUEST.DEFAULT_MESSAGE });
   }
@@ -202,12 +203,20 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       }); //  create webtoken
+      // console.log(user);
+      console.log("from login controller => user.name : ", user.name);
 
-      res.send({ token });
+      console.log("token from login controller", { token });
+      //res.send({ token });
+      res.status(200).send(
+        // _id: user._id,
+        // email: user.email,
+
+        { token, user },
+      );
+      //res.send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      res.status(ERRORS.INVALID_REQUEST.STATUS).send({ message: err.message });
     });
 };
-
-module.exports.getCurrentUser = (req, res) => {};
