@@ -3,10 +3,9 @@ const jwt = require("jsonwebtoken");
 // const { validationResult } = require("express-validator/check");
 
 const User = require("../models/user");
-const { NODE_ENV, JWT_SECRET } = process.env;
 
 const ERRORS = require("../utils/errors");
-// const JWT_SECRET = require("../utils/config");
+const { JWT_SECRET } = require("../utils/config");
 
 module.exports.getAllUsers = (req, res) => {
   console.log("getUser all data test ...");
