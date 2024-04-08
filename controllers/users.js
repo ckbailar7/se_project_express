@@ -8,21 +8,23 @@ const ERRORS = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 module.exports.getAllUsers = (req, res) => {
-  console.log("getUser all data test ...");
   User.find({})
 
     .then((allUsers) => res.send({ data: allUsers }))
-
-    .catch(() => {
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((err) => {
+      console.error(err);
       res
         .status(ERRORS.DEFAULT_ERROR.STATUS)
         .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
     });
 };
 module.exports.getUser = (req, res) => {
-  const userId = req.params.id;
+  const { _id } = req.user;
 
-  User.findById(userId)
+  User.findById(_id)
     .orFail()
 
     .then((user) => res.send({ data: user }))
@@ -50,7 +52,7 @@ module.exports.getCurrentUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "validatorError" || err.name === "CastError") {
-        console.err(err);
+        console.error(err);
         res
           .status(ERRORS.INVALID_REQUEST.STATUS)
           .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
@@ -71,28 +73,37 @@ module.exports.updateUserProfile = (req, res) => {
   User.findByIdAndUpdate(
     userId,
     { name, avatar },
-    { new: true },
-    (err, data) => {
-      if (err) {
-        console.error(err);
-        res
-          .status(ERRORS.INVALID_REQUEST.STATUS)
-          .send(ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE);
-      } else if (err.name === "ValidationError" || err.name === "CastError") {
-        console.error(err);
-        res
-          .status(ERRORS.INVALID_REQUEST.STATUS)
-          .send(ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE);
-      } else if (err.name === "DocumentNotFoundError") {
-        res
-          .status(ERRORS.NOT_FOUND.STATUS)
-          .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
-      } else {
-        console.log(data);
-        res.send(data);
-      }
-    },
-  );
+    { new: true, runValidators: true },
+  )
+
+    .then(() => {
+      res.status(200).send({ name, avatar });
+    })
+    .catch((err) => {
+      console.log("Location of Error", err);
+    });
+
+  // (err, data) => {
+  //   if (err) {
+  //     console.error(err);
+  //     res
+  //       .status(ERRORS.INVALID_REQUEST.STATUS)
+  //       .send(ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE);
+  //   } else if (err.name === "ValidationError" || err.name === "CastError") {
+  //     console.error(err);
+  //     res
+  //       .status(ERRORS.INVALID_REQUEST.STATUS)
+  //       .send(ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE);
+  //   } else if (err.name === "DocumentNotFoundError") {
+  //     res
+  //       .status(ERRORS.NOT_FOUND.STATUS)
+  //       .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+  //   } else {
+  //     console.log(data);
+  //     res.send(data);
+  //   }
+  // },
+  // );
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -211,7 +222,7 @@ module.exports.login = (req, res, next) => {
         // _id: user._id,
         // email: user.email,
 
-        { token, user },
+        { token },
       );
       //res.send({ token });
     })

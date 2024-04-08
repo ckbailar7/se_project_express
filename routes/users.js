@@ -6,14 +6,14 @@ const router = require("express").Router();
 // Import Controllers
 const {
   getCurrentUser,
-  updateUser,
+  updateUserProfile,
   getAllUsers,
   getUser,
   createUser,
 } = require("../controllers/users");
 
 // Route 1 GET /users — returns all users
-// router.get("/", getAllUsers);
+router.get("/me", auth, getUser);
 //With user authorization , we cannot access other profiles
 
 // Route 2 GET /users/:userId - returns a user by _id
@@ -26,9 +26,9 @@ const {
 //now we create a user by signing up
 
 //CREATE GET/users/me ROUTE STEP 6 Proj 13<><><>
-router.get("/users", auth, getCurrentUser);
+//router.get("/me", auth, getCurrentUser);
 
 // STEP 7 <><><> PATCH /users/me — update profile
-//router.patch("/users/me", updateUser);
+router.patch("/me", updateUserProfile);
 
 module.exports = router;
