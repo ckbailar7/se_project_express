@@ -22,12 +22,9 @@ module.exports.getAllUsers = (req, res) => {
     });
 };
 module.exports.getUser = (req, res) => {
-  const { _id } = req.user;
-
-  User.findById(_id)
+  User.findById(req.user._id)
     .orFail()
-
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === "ValidationError" || err.name === "CastError") {
         res
@@ -46,10 +43,10 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.getCurrentUser = (req, res) => {
-  const userId = req.params.id;
+  const userId = req.user._id;
   User.findById(userId)
     .orFail()
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === "validatorError" || err.name === "CastError") {
         console.error(err);

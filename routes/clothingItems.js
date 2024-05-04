@@ -8,6 +8,8 @@ const {
   deleteClothingItem,
   likeClothingItem,
   dislikeClothingItem,
+  deleteClothingItemUPDATED,
+  deleteClothingItem428,
 } = require("../controllers/clothingItems");
 
 //ROUTES NOT NEEDING PROTECTION
@@ -15,7 +17,7 @@ router.get("/", getClothingItems);
 
 //ROUTES NEEDING PROTECTION
 router.post("/", createClothingItem);
-router.delete("/:itemId", deleteClothingItem);
+router.delete("/:itemId", deleteClothingItem428);
 router.put("/:itemId/likes", likeClothingItem);
 router.delete("/:itemId/likes", dislikeClothingItem);
 
