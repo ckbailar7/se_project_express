@@ -17,7 +17,7 @@ router.get("/", getClothingItems);
 
 //ROUTES NEEDING PROTECTION
 router.post("/", createClothingItem);
-router.delete("/:itemId", deleteClothingItem428);
+router.delete("/:itemId", deleteClothingItem);
 router.put("/:itemId/likes", likeClothingItem);
 router.delete("/:itemId/likes", dislikeClothingItem);
 

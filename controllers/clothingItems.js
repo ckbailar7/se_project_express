@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const ClothingItem = require("../models/clothingItem");
 const ERRORS = require("../utils/errors");
 
@@ -34,36 +36,23 @@ module.exports.createClothingItem = (req, res) => {
       }
     });
 };
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-module.exports.deleteClothingItem428 = (req, res) => {
+module.exports.deleteClothingItem = (req, res) => {
   //const { clothingId } = req.params;
   const currentUser = req.user;
 
+  // Extract the item ID from req.params
+  const itemId = req.params.itemId;
+
+  if (!mongoose.isValidObjectId(itemId) || !itemId) {
+    //if response needed is not found
+    return res
+      .status(ERRORS.INVALID_REQUEST.STATUS)
+      .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
+  }
+
   // Begin search
-  ClothingItem.findById(req.params.itemId)
+  ClothingItem.findById(itemId)
     .orFail()
     .then((item) => {
       // if item is not found in DB
@@ -81,7 +70,7 @@ module.exports.deleteClothingItem428 = (req, res) => {
       }
 
       // Delete Item if if()statements are ignored ie item being deleted is owned by user
-      return ClothingItem.findByIdAndRemove(req.params.itemId)
+      return ClothingItem.findByIdAndRemove(itemId)
         .then(() => {
           res.status(200).send({ message: "Item Deleted Successfully" });
         })
@@ -97,56 +86,20 @@ module.exports.deleteClothingItem428 = (req, res) => {
               .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
           }
         });
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        res
+          .status(ERRORS.NOT_FOUND.STATUS)
+          .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+      } else if (err) {
+        res.status(ERRORS.SERVER_ERROR.STATUS).send({
+          message: ERRORS.SERVER_ERROR.DEFAULT_MESSAGE,
+        });
+      }
     });
 };
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-// module.exports.deleteClothingItem = (req, res) => {
-//   console.log(req.params);
-//   // const { clothingId } = req.params.itemId;
-//   // const currentUser = req.user._id;
-//   // const owner = req.params.owner;
-//   ClothingItem.findById(req.params)
-//     .orFail()
-//     .then((data) => {
-//       if (!data) {
-//         res
-//           .status(ERRORS.NOT_FOUND.STATUS)
-//           .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
-//       }
-//       if (!data.owner.equals(currentUser)) {
-//         return res
-//           .status(ERRORS.FORBIDDEN.STATUS)
-//           .send({ message: ERRORS.FORBIDDEN.DEFAULT_MESSAGE });
-//       }
-//       return ClothingItem.findByIdAndRemove(req.params)
-//         .then(() => {
-//           res.status(200).send({ message: "Item Deleted Successfully" });
-//         })
-//         .catch((err) => {
-//           if (err.name === "CastError") {
-//             res
-//               .status(ERRORS.INVALID_REQUEST.STATUS)
-//               .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
-//           } else if (err.name === "DocumentNotFoundError") {
-//             res
-//               .status(ERRORS.NOT_FOUND.STATUS)
-//               .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
-//           }
-//         });
-//     });
-// };
 
 module.exports.likeClothingItem = (req, res) => {
   const userId = req.user._id;
