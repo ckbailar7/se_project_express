@@ -3,8 +3,6 @@ const { JWT_SECRET } = require("../utils/config");
 
 // PREVIOUSLY moved JWT_SECRET from .env file ===> locally decalred variable ^
 
-const { NODE_ENV } = process.env;
-
 module.exports = (req, res, next) => {
   // Auth will go here
   const { authorization } = req.headers;
