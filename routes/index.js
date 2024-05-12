@@ -6,11 +6,11 @@ const { createUser, login } = require("../controllers/users");
 
 const ERRORS = require("../utils/errors");
 
-//ROUTES NOT NEEDING PROTECTION
+// ROUTES NOT NEEDING PROTECTION
 router.post("/signin", login);
 router.post("/signup", createUser);
 
-//ROUTES NEEDING PROTECTION
+// ROUTES NEEDING PROTECTION
 router.use(auth);
 router.use("/users", users);
 router.use("/items", clothingItems);
@@ -23,9 +23,9 @@ module.exports = router;
 
 // Total list of routes in use that need Protected with authorization : >>> 5
 
-//router.use("/users", users); -- good
+// router.use("/users", users); -- good
 
-//router.post("/", createClothingItem); -- good
+// router.post("/", createClothingItem); -- good
 
 // router.delete("/:itemId", deleteClothingItem); -- good
 

@@ -38,21 +38,22 @@ module.exports.createClothingItem = (req, res) => {
 };
 
 module.exports.deleteClothingItem = (req, res) => {
-  //const { clothingId } = req.params;
+  // const { clothingId } = req.params;
+
   const currentUser = req.user;
 
   // Extract the item ID from req.params
-  const itemId = req.params.itemId;
+  const { itemId } = req.params;
 
   if (!mongoose.isValidObjectId(itemId) || !itemId) {
-    //if response needed is not found
+    // if response needed is not found
     return res
       .status(ERRORS.INVALID_REQUEST.STATUS)
       .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
   }
 
   // Begin search
-  ClothingItem.findById(itemId)
+  ClothingItem.findById({ _id: itemId })
     .orFail()
     .then((item) => {
       // if item is not found in DB
@@ -70,12 +71,12 @@ module.exports.deleteClothingItem = (req, res) => {
       }
 
       // Delete Item if if()statements are ignored ie item being deleted is owned by user
-      return ClothingItem.findByIdAndRemove(itemId)
-        .then(() => {
-          res.status(200).send({ message: "Item Deleted Successfully" });
-        })
+      return ClothingItem.findByIdAndRemove({ _id: itemId })
+        .then(() =>
+          res.status(200).send({ message: "Item Deleted Successfully" }),
+        )
         .catch((err) => {
-          //console.error(err);
+          // console.error(err);
           if (err.name === "CastError") {
             res
               .status(ERRORS.INVALID_REQUEST.STATUS)
@@ -88,7 +89,7 @@ module.exports.deleteClothingItem = (req, res) => {
         });
     })
     .catch((err) => {
-      console.error(err);
+      // console.error(err);
       if (err.name === "DocumentNotFoundError") {
         res
           .status(ERRORS.NOT_FOUND.STATUS)
@@ -99,6 +100,7 @@ module.exports.deleteClothingItem = (req, res) => {
         });
       }
     });
+  return false;
 };
 
 module.exports.likeClothingItem = (req, res) => {

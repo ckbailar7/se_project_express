@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const auth = require("../middlewares/auth");
+// const auth = require("../middlewares/auth");
 
 const {
   getClothingItems,
@@ -8,14 +8,14 @@ const {
   deleteClothingItem,
   likeClothingItem,
   dislikeClothingItem,
-  deleteClothingItemUPDATED,
-  deleteClothingItem428,
+  // deleteClothingItemUPDATED,
+  // deleteClothingItem428,
 } = require("../controllers/clothingItems");
 
-//ROUTES NOT NEEDING PROTECTION
+// ROUTES NOT NEEDING PROTECTION
 router.get("/", getClothingItems);
 
-//ROUTES NEEDING PROTECTION
+// ROUTES NEEDING PROTECTION
 router.post("/", createClothingItem);
 router.delete("/:itemId", deleteClothingItem);
 router.put("/:itemId/likes", likeClothingItem);
