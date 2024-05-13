@@ -94,7 +94,7 @@ module.exports.deleteClothingItem = (req, res) => {
         res
           .status(ERRORS.NOT_FOUND.STATUS)
           .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
-      } else if (err) {
+      } else {
         res.status(ERRORS.SERVER_ERROR.STATUS).send({
           message: ERRORS.SERVER_ERROR.DEFAULT_MESSAGE,
         });
@@ -124,6 +124,10 @@ module.exports.likeClothingItem = (req, res) => {
         res
           .status(ERRORS.NOT_FOUND.STATUS)
           .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+      } else {
+        res
+          .status(ERRORS.DEFAULT_ERROR.STATUS)
+          .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
       }
     });
 };
@@ -149,6 +153,10 @@ module.exports.dislikeClothingItem = (req, res) => {
         res
           .status(ERRORS.NOT_FOUND.STATUS)
           .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+      } else {
+        res
+          .status(ERRORS.DEFAULT_ERROR.STATUS)
+          .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
       }
     });
 };

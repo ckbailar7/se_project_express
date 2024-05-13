@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-// const auth = require("../middlewares/auth");
+const auth = require("../middlewares/auth");
 
 const {
   getClothingItems,
@@ -16,9 +16,9 @@ const {
 router.get("/", getClothingItems);
 
 // ROUTES NEEDING PROTECTION
-router.post("/", createClothingItem);
-router.delete("/:itemId", deleteClothingItem);
-router.put("/:itemId/likes", likeClothingItem);
-router.delete("/:itemId/likes", dislikeClothingItem);
+router.post("/", auth, createClothingItem);
+router.delete("/:itemId", auth, deleteClothingItem);
+router.put("/:itemId/likes", auth, likeClothingItem);
+router.delete("/:itemId/likes", auth, dislikeClothingItem);
 
 module.exports = router;

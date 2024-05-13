@@ -2,28 +2,28 @@ const bcrypt = require("bcrypt"); // importing bcrypt// importing bcrypt
 const jwt = require("jsonwebtoken");
 // const { validationResult } = require("express-validator/check");
 
-const User = require("../models/User");
+const User = require("../models/user");
 
 const ERRORS = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
-module.exports.getAllUsers = (req, res) => {
-  User.find({})
+// module.exports.getAllUsers = (req, res) => {
+//   User.find({})
 
-    .then((allUsers) => res.send({ data: allUsers }))
+//     .then((allUsers) => res.send({ data: allUsers }))
 
-    .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
-        res
-          .status(ERRORS.NOT_FOUND.STATUS)
-          .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
-      } else {
-        res
-          .status(ERRORS.DEFAULT_ERROR.STATUS)
-          .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
-      }
-    });
-};
+//     .catch((err) => {
+//       if (err.name === "DocumentNotFoundError") {
+//         res
+//           .status(ERRORS.NOT_FOUND.STATUS)
+//           .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+//       } else {
+//         res
+//           .status(ERRORS.DEFAULT_ERROR.STATUS)
+//           .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
+//       }
+//     });
+// };
 module.exports.getUser = (req, res) => {
   User.findById(req.user._id)
     .orFail()
@@ -45,13 +45,41 @@ module.exports.getUser = (req, res) => {
     });
 };
 
-module.exports.getCurrentUser = (req, res) => {
+// module.exports.getCurrentUser = (req, res) => {
+//   const userId = req.user._id;
+//   User.findById(userId)
+//     .orFail()
+//     .then((user) => res.send({ user }))
+//     .catch((err) => {
+//       if (err.name === "validatorError" || err.name === "CastError") {
+//         res
+//           .status(ERRORS.INVALID_REQUEST.STATUS)
+//           .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
+//       } else {
+//         res
+//           .status(ERRORS.DEFAULT_ERROR.STATUS)
+//           .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
+//       }
+//     });
+// };
+
+// Step 7 : Search the database for a user using the submitted email; if the user is found, hash the submitted password and compare it to the hash inside the base.
+module.exports.updateUserProfile = (req, res) => {
+  // This route should only allow modification of the name and avatar fields. You'll need to return an updated object in the response (using the new property).
+  const { name, avatar } = req.body;
   const userId = req.user._id;
-  User.findById(userId)
-    .orFail()
-    .then((user) => res.send({ user }))
+
+  User.findByIdAndUpdate(
+    userId,
+    { name, avatar },
+    { new: true, runValidators: true },
+  )
+
+    .then(() => {
+      res.status(200).send({ name, avatar });
+    })
     .catch((err) => {
-      if (err.name === "validatorError" || err.name === "CastError") {
+      if (err.message === "ValidationError") {
         res
           .status(ERRORS.INVALID_REQUEST.STATUS)
           .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
@@ -63,29 +91,13 @@ module.exports.getCurrentUser = (req, res) => {
     });
 };
 
-// Step 7 : Search the database for a user using the submitted email; if the user is found, hash the submitted password and compare it to the hash inside the base.
-module.exports.updateUserProfile = (req, res) => {
-  // This route should only allow modification of the name and avatar fields. You'll need to return an updated object in the response (using the new property).
-  const { name, avatar } = req.body;
-  const userId = req.params.id;
-
-  User.findByIdAndUpdate(
-    userId,
-    { name, avatar },
-    { new: true, runValidators: true },
-  )
-
-    .then(() => {
-      res.status(200).send({ name, avatar });
-    })
-    .catch((err) => err);
-};
-
 module.exports.createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
 
   if (!email || !password) {
-    res.status(400).send({ message: "incorrect email or password" });
+    res
+      .status(ERRORS.INVALID_LOGIN_REQUEST.STATUS)
+      .send({ message: "incorrect email or password" });
     return;
   }
 
@@ -122,7 +134,7 @@ module.exports.createUser = (req, res, next) => {
       // Checking to see if the user already exists in the database
       if (user) {
         return res
-          .status(409)
+          .status(ERRORS.ALREADY_EXSISTS.STATUS)
           .send({ message: "User with this email already exists" });
       }
 
@@ -145,16 +157,19 @@ module.exports.createUser = (req, res, next) => {
           }
           if (err.code === 11000) {
             return res
-              .status(ERRORS.INVALID_LOGIN_REQUEST.STATUS)
+              .status(ERRORS.ALREADY_EXSISTS.STATUS)
               .send({ message: "Email address is already in use" });
           }
-          res
+          return res
             .status(ERRORS.DEFAULT_ERROR.STATUS)
             .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
-          return err;
         });
     })
-    .catch((err) => next(err));
+    .catch(() =>
+      res
+        .status(ERRORS.DEFAULT_ERROR.STATUS)
+        .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE }),
+    );
 };
 
 module.exports.login = (req, res) => {
@@ -162,8 +177,8 @@ module.exports.login = (req, res) => {
 
   if (!email || !password) {
     return res
-      .status(ERRORS.INVALID_LOGIN_REQUEST.STATUS)
-      .send({ message: ERRORS.INVALID_LOGIN_REQUEST.DEFAULT_MESSAGE });
+      .status(ERRORS.INVALID_REQUEST.STATUS)
+      .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
   }
 
   return User.findUserByCredentials(email, password)
@@ -187,6 +202,14 @@ module.exports.login = (req, res) => {
       // res.send({ token });
     })
     .catch((err) => {
-      res.status(ERRORS.INVALID_REQUEST.STATUS).send({ message: err.message });
+      if (err.message === "Incorrect email or password") {
+        res
+          .status(ERRORS.AUTH_REQUIRED.STATUS)
+          .send({ message: ERRORS.AUTH_REQUIRED.DEFAULT_MESSAGE });
+      } else {
+        res
+          .status(ERRORS.DEFAULT_ERROR.STATUS)
+          .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
+      }
     });
 };

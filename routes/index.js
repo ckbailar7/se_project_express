@@ -11,7 +11,7 @@ router.post("/signin", login);
 router.post("/signup", createUser);
 
 // ROUTES NEEDING PROTECTION
-router.use(auth);
+// router.use(auth);
 router.use("/users", users);
 router.use("/items", clothingItems);
 

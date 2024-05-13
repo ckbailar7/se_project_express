@@ -30,6 +30,6 @@ router.get("/me", auth, getUser);
 // router.get("/me", auth, getCurrentUser);
 
 // STEP 7 <><><> PATCH /users/me — update profile
-router.patch("/me", updateUserProfile);
+router.patch("/me", auth, updateUserProfile);
 
 module.exports = router;

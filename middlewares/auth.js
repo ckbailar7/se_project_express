@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
+const ERRORS = require("../utils/errors");
 
 // PREVIOUSLY moved JWT_SECRET from .env file ===> locally decalred variable ^
 
@@ -10,7 +11,9 @@ module.exports = (req, res, next) => {
   // check if header exists and if starts with '"Bearer"
   if (!authorization || !authorization.startsWith("Bearer ")) {
     // console.log("Error Location ");
-    return res.status(400).send({ message: "Authorization required" });
+    return res
+      .status(ERRORS.AUTH_REQUIRED.STATUS)
+      .send({ message: "Authorization required" });
   }
 
   // getting token
@@ -24,8 +27,8 @@ module.exports = (req, res, next) => {
   } catch (err) {
     // console.log(err);
     return res
-      .status(401)
-      .send({ message: "Authorization required bad token" });
+      .status(ERRORS.AUTH_REQUIRED.STATUS)
+      .send({ message: ERRORS.AUTH_REQUIRED.DEFAULT_MESSAGE });
   }
 
   req.user = payload; // Assigning the payload to the request object

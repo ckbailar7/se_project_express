@@ -8,6 +8,7 @@ require("dotenv").config();
 
 const { createUser, login } = require("./controllers/users");
 const auth = require("./middlewares/auth");
+app.use(cors());
 
 const routes = require("./routes");
 
@@ -19,13 +20,12 @@ app.use(express.json());
 
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
-app.post("/signup", createUser);
-app.post("/signin", login);
+// app.post("/signup", createUser);
+// app.post("/signin", login);
 
-app.use(auth);
+// app.use(auth);
 
 app.use(routes);
-app.use(cors());
 
 // app.listen(PORT);
 app.listen(PORT, () => {
