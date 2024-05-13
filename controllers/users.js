@@ -79,7 +79,7 @@ module.exports.updateUserProfile = (req, res) => {
       res.status(200).send({ name, avatar });
     })
     .catch((err) => {
-      if (err.message === "ValidationError") {
+      if (err.name === "ValidationError") {
         res
           .status(ERRORS.INVALID_REQUEST.STATUS)
           .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
@@ -91,7 +91,7 @@ module.exports.updateUserProfile = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
 
   if (!email || !password) {
@@ -100,34 +100,6 @@ module.exports.createUser = (req, res, next) => {
       .send({ message: "incorrect email or password" });
     return;
   }
-
-  // try {
-  //   const existingUser = await.User.findOne({email});
-
-  //   if(existingUser) {
-  //     return res
-  //         .status(409)
-  //         .send({ message: "User with this email already exists" });
-  //   }
-
-  //   const hash = await bcrypt.hash(password, 10);
-  //   await User.create({ name, about, avatar, email, password: hash });
-  //   res.status(200).send({name, about, avatar, email});
-  // } catch (err) {
-  //   if (err.name === "ValidationError" || err.name === "CastError") {
-  //     return res
-  //             .status(ERRORS.INVALID_REQUEST.STATUS)
-  //             .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
-  //   } else if (err.code === 11000) {
-  //     return res
-  //       .status(ERRORS.INVALID_LOGIN_REQUEST.STATUS)
-  //       .send({ message: "Email address is already in use" });
-  //   }
-  //   res
-  //     .status(ERRORS.DEFAULT_ERROR.STATUS)
-  //     .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
-  //     next()
-  // }
 
   User.findOne({ email })
     .then((user) => {

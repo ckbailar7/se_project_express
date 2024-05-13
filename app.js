@@ -6,15 +6,13 @@ const cors = require("cors");
 
 require("dotenv").config();
 
-const { createUser, login } = require("./controllers/users");
-const auth = require("./middlewares/auth");
-app.use(cors());
-
 const routes = require("./routes");
 
 const app = express();
 
 const { PORT = 3001 } = process.env;
+
+app.use(cors());
 
 app.use(express.json());
 
