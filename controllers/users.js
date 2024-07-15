@@ -116,11 +116,11 @@ module.exports.createUser = (req, res) => {
         .then((hash) =>
           User.create({ name, about, avatar, email, password: hash }).then(
             (newUser) => {
-              const token = jwt.sign({ _id: newUser._id }, JWT_SECRET, {
-                expiresIn: "7d",
-              }); //  create webtoken
+              // const token = jwt.sign({ _id: newUser._id }, JWT_SECRET, {
+              //   expiresIn: "7d",
+              // }); //  create webtoken
 
-              res.status(200).send({ user: newUser, token });
+              res.status(200).send({ user: newUser });
             },
           ),
         )
