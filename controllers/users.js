@@ -76,7 +76,7 @@ module.exports.updateUserProfile = (req, res) => {
   )
 
     .then(() => {
-      res.status(200).send({ name, avatar });
+      res.status(200).send({ name, avatar, _id: userId });
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
