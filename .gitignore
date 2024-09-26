@@ -17,3 +17,6 @@ node_modules
 .DS_Store
 .idea
 .vscode
+
+# All log files are invisible to git
+*.log

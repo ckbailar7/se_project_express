@@ -1,23 +1,26 @@
 const mongoose = require("mongoose");
+const BadRequestError = require("../utils/errorClasses/BadRequestError.js");
+const ConflictError = require("../utils/errorClasses/ConflictError.js");
+const ForbiddenError = require("../utils/errorClasses/ForbiddenError.js");
+const NotFoundError = require("../utils/errorClasses/NotFoundError.js");
+const UnauthorizedError = require("../utils/errorClasses/UnauthorizedError.js");
 
 const ClothingItem = require("../models/clothingItem");
 const ERRORS = require("../utils/errors");
 
-module.exports.getClothingItems = (req, res) => {
+module.exports.getClothingItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => {
       res.send({
         data: items,
       });
     })
-    .catch(() => {
-      res
-        .status(ERRORS.DEFAULT_ERROR.STATUS)
-        .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
+    .catch((err) => {
+      next(err);
     });
 };
 
-module.exports.createClothingItem = (req, res) => {
+module.exports.createClothingItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
@@ -26,18 +29,14 @@ module.exports.createClothingItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        res
-          .status(ERRORS.INVALID_REQUEST.STATUS)
-          .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
+        next(new BadRequestError("Invalid data request"));
       } else {
-        res
-          .status(ERRORS.DEFAULT_ERROR.STATUS)
-          .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
+        next(err);
       }
     });
 };
 
-module.exports.deleteClothingItem = (req, res) => {
+module.exports.deleteClothingItem = (req, res, next) => {
   // const { clothingId } = req.params;
 
   const currentUser = req.user;
@@ -47,9 +46,7 @@ module.exports.deleteClothingItem = (req, res) => {
 
   if (!mongoose.isValidObjectId(itemId) || !itemId) {
     // if response needed is not found
-    return res
-      .status(ERRORS.INVALID_REQUEST.STATUS)
-      .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
+    throw new BadRequestError("Invalid request");
   }
 
   // Begin search
@@ -58,16 +55,12 @@ module.exports.deleteClothingItem = (req, res) => {
     .then((item) => {
       // if item is not found in DB
       if (!item) {
-        return res
-          .status(ERRORS.NOT_FOUND.STATUS)
-          .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+        throw new NotFoundError("Item not found");
       }
 
       // check if item is owned by current user
       if (!item.owner.equals(currentUser._id)) {
-        return res
-          .status(ERRORS.FORBIDDEN.STATUS)
-          .send({ message: ERRORS.FORBIDDEN.DEFAULT_MESSAGE });
+        throw new ForbiddenError("Item is not owned by owner");
       }
 
       // Delete Item if if()statements are ignored ie item being deleted is owned by user
@@ -78,32 +71,24 @@ module.exports.deleteClothingItem = (req, res) => {
         .catch((err) => {
           // console.error(err);
           if (err.name === "CastError") {
-            res
-              .status(ERRORS.INVALID_REQUEST.STATUS)
-              .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
+            next(new BadRequestError("Invalid request"));
           } else if (err.name === "DocumentNotFoundError") {
-            res
-              .status(ERRORS.NOT_FOUND.STATUS)
-              .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+            next(new NotFoundError("Not found"));
           }
         });
     })
     .catch((err) => {
       // console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        res
-          .status(ERRORS.NOT_FOUND.STATUS)
-          .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+        next(new NotFoundError("Not found"));
       } else {
-        res.status(ERRORS.SERVER_ERROR.STATUS).send({
-          message: ERRORS.SERVER_ERROR.DEFAULT_MESSAGE,
-        });
+        next(err);
       }
     });
   return false;
 };
 
-module.exports.likeClothingItem = (req, res) => {
+module.exports.likeClothingItem = (req, res, next) => {
   const userId = req.user._id;
   const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
@@ -117,22 +102,16 @@ module.exports.likeClothingItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        res
-          .status(ERRORS.INVALID_REQUEST.STATUS)
-          .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
+        next(new BadRequestError("Invalid data request"));
       } else if (err.name === "DocumentNotFoundError") {
-        res
-          .status(ERRORS.NOT_FOUND.STATUS)
-          .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+        next(new NotFoundError("Document not found"));
       } else {
-        res
-          .status(ERRORS.DEFAULT_ERROR.STATUS)
-          .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
+        next(err);
       }
     });
 };
 
-module.exports.dislikeClothingItem = (req, res) => {
+module.exports.dislikeClothingItem = (req, res, next) => {
   const userId = req.user._id;
   const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
@@ -146,17 +125,11 @@ module.exports.dislikeClothingItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        res
-          .status(ERRORS.INVALID_REQUEST.STATUS)
-          .send({ message: ERRORS.INVALID_REQUEST.DEFAULT_MESSAGE });
+        next(new BadRequestError("Invalid data request"));
       } else if (err.name === "DocumentNotFoundError") {
-        res
-          .status(ERRORS.NOT_FOUND.STATUS)
-          .send({ message: ERRORS.NOT_FOUND.DEFAULT_MESSAGE });
+        next(new NotFoundError("Not found"));
       } else {
-        res
-          .status(ERRORS.DEFAULT_ERROR.STATUS)
-          .send({ message: ERRORS.DEFAULT_ERROR.DEFAULT_MESSAGE });
+        next(err);
       }
     });
 };
