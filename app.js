@@ -45,18 +45,15 @@ const app = express();
 
 // Define your CORS options
 const corsOptions = {
-  origin: [
-    "https://wtwr.yote.me",
-    "https://www.wtwr.yote.me",
-    "https://api.wtwr.yote.me",
-  ], // React app's URL
+  origin: ["https://wtwr.yote.me", "http://localhost:3000"],
   optionsSuccessStatus: 200,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-  // credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
 
 // Use CORS with options
-app.use(cors(corsOptions));
+app.use(cors());
 
 const { PORT = 3001 } = process.env;
 

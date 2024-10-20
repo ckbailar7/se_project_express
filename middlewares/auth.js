@@ -25,7 +25,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    // console.log(err);
+    console.log(err);
     return res
       .status(ERRORS.AUTH_REQUIRED.STATUS)
       .send({ message: ERRORS.AUTH_REQUIRED.DEFAULT_MESSAGE });
