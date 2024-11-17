@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 const ERRORS = require("../utils/errors");
+const AuthRequiredError = require("../utils/errorClasses/UnauthorizedError");
 
 // PREVIOUSLY moved JWT_SECRET from .env file ===> locally decalred variable ^
 
@@ -11,7 +12,7 @@ module.exports = (req, res, next) => {
   // check if header exists and if starts with '"Bearer"
   if (!authorization || !authorization.startsWith("Bearer ")) {
     // console.log("Error Location ");
-    const error = new Error(ERRORS.AUTH_REQUIRED.DEFAULT_MESSAGE);
+    const error = new AuthRequiredError(ERRORS.AUTH_REQUIRED.DEFAULT_MESSAGE);
     error.statusCode = ERRORS.AUTH_REQUIRED.STATUS;
     return next(error); // Passing error to centralized error handling
   }
@@ -26,7 +27,7 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
     console.log(err);
-    const error = new Error(ERRORS.AUTH_REQUIRED.DEFAULT_MESSAGE);
+    const error = new AuthRequiredError(ERRORS.AUTH_REQUIRED.DEFAULT_MESSAGE);
     error.statusCode = ERRORS.AUTH_REQUIRED.STATUS;
     return next(error); // Passing error to centralized error handling
   }

@@ -6,6 +6,8 @@ const { createUser, login } = require("../controllers/users");
 
 const ERRORS = require("../utils/errors");
 
+const NotFoundError = require("../utils/errorClasses/NotFoundError");
+
 const {
   validateUserSignin,
   validateUserSignup,
@@ -21,8 +23,7 @@ router.use("/users", users);
 router.use("/items", clothingItems);
 
 router.use((req, res, next) => {
-  const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
-  error.statusCode = ERRORS.NOT_FOUND.STATUS;
+  const error = new NotFoundError(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
   return next(error);
 });
 
