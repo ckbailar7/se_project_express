@@ -1,13 +1,13 @@
 const bcrypt = require("bcrypt"); // importing bcrypt// importing bcrypt
 const jwt = require("jsonwebtoken");
-const BadRequestError = require("../utils/errorClasses/BadRequestError.js");
-const ConflictError = require("../utils/errorClasses/ConflictError.js");
-const ForbiddenError = require("../utils/errorClasses/ForbiddenError.js");
-const NotFoundError = require("../utils/errorClasses/NotFoundError.js");
-const UnauthorizedError = require("../utils/errorClasses/UnauthorizedError.js");
+const BadRequestError = require("../utils/errorClasses/BadRequestError");
+const ConflictError = require("../utils/errorClasses/ConflictError");
+// const ForbiddenError = require("../utils/errorClasses/ForbiddenError.js");
+const NotFoundError = require("../utils/errorClasses/NotFoundError");
+const UnauthorizedError = require("../utils/errorClasses/UnauthorizedError");
 const User = require("../models/user");
 
-const ERRORS = require("../utils/errors");
+// const ERRORS = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 module.exports.getUser = (req, res, next) => {
@@ -17,6 +17,8 @@ module.exports.getUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === "CastError") {
         next(new BadRequestError("INVALID REQUEST SENT"));
+      } else if (err.name === "DocumentNotFoundError") {
+        next(new NotFoundError("RESOURCE NOT FOUND"));
       } else {
         next(err);
       }
@@ -63,7 +65,12 @@ module.exports.createUser = (req, res, next) => {
         .then((hash) =>
           User.create({ name, about, avatar, email, password: hash }).then(
             (newUser) => {
-              res.status(200).send({ user: newUser });
+              // Converts the newUser response to a simplified object, then remove the password explicitly
+              const userWithoutPassword = newUser.toObject();
+              delete userWithoutPassword.password;
+
+              // Updated object being sent from newUser ==> userWithoutPassword
+              res.status(200).send({ user: userWithoutPassword });
             },
           ),
         )
@@ -100,7 +107,7 @@ module.exports.login = (req, res, next) => {
       if (err.message === "Incorrect email or password") {
         next(new UnauthorizedError("Incorrect email or password"));
       } else {
-        next(new BadRequestError("Invalid request sent"));
+        next(err);
       }
     });
 };

@@ -11,9 +11,9 @@ module.exports = (req, res, next) => {
   // check if header exists and if starts with '"Bearer"
   if (!authorization || !authorization.startsWith("Bearer ")) {
     // console.log("Error Location ");
-    return res
-      .status(ERRORS.AUTH_REQUIRED.STATUS)
-      .send({ message: "Authorization required" });
+    const error = new Error(ERRORS.AUTH_REQUIRED.DEFAULT_MESSAGE);
+    error.statusCode = ERRORS.AUTH_REQUIRED.STATUS;
+    return next(error); // Passing error to centralized error handling
   }
 
   // getting token
@@ -26,9 +26,9 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
     console.log(err);
-    return res
-      .status(ERRORS.AUTH_REQUIRED.STATUS)
-      .send({ message: ERRORS.AUTH_REQUIRED.DEFAULT_MESSAGE });
+    const error = new Error(ERRORS.AUTH_REQUIRED.DEFAULT_MESSAGE);
+    error.statusCode = ERRORS.AUTH_REQUIRED.STATUS;
+    return next(error); // Passing error to centralized error handling
   }
 
   req.user = payload; // Assigning the payload to the request object

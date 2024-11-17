@@ -1,6 +1,8 @@
 const router = require("express").Router();
+const { celebrate } = require("celebrate");
 
 const auth = require("../middlewares/auth");
+
 // const users = require("./users");
 // creating a router
 
@@ -12,6 +14,8 @@ const {
   getUser,
   // createUser,
 } = require("../controllers/users");
+
+const { updateUserProfileSchema } = require("../middlewares/validation");
 
 // Route 1 GET /users — returns all users
 router.get("/me", auth, getUser);
@@ -30,6 +34,10 @@ router.get("/me", auth, getUser);
 // router.get("/me", auth, getCurrentUser);
 
 // STEP 7 <><><> PATCH /users/me — update profile
-router.patch("/me", auth, updateUserProfile);
+router.patch(
+  "/me",
+  celebrate({ body: updateUserProfileSchema }),
+  updateUserProfile,
+);
 
 module.exports = router;

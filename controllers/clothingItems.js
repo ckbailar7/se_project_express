@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
-const BadRequestError = require("../utils/errorClasses/BadRequestError.js");
-const ConflictError = require("../utils/errorClasses/ConflictError.js");
-const ForbiddenError = require("../utils/errorClasses/ForbiddenError.js");
-const NotFoundError = require("../utils/errorClasses/NotFoundError.js");
-const UnauthorizedError = require("../utils/errorClasses/UnauthorizedError.js");
+const BadRequestError = require("../utils/errorClasses/BadRequestError");
+// const ConflictError = require("../utils/errorClasses/ConflictError.js");
+const ForbiddenError = require("../utils/errorClasses/ForbiddenError");
+const NotFoundError = require("../utils/errorClasses/NotFoundError");
+// const UnauthorizedError = require("../utils/errorClasses/UnauthorizedError");
 
 const ClothingItem = require("../models/clothingItem");
-const ERRORS = require("../utils/errors");
+// const ERRORS = require("../utils/errors");
 
 module.exports.getClothingItems = (req, res, next) => {
   ClothingItem.find({})
@@ -74,6 +74,8 @@ module.exports.deleteClothingItem = (req, res, next) => {
             next(new BadRequestError("Invalid request"));
           } else if (err.name === "DocumentNotFoundError") {
             next(new NotFoundError("Not found"));
+          } else {
+            next(err);
           }
         });
     })

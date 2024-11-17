@@ -35,8 +35,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
-const errorHandler = require("./middlewares/error-handler");
 const { errors } = require("celebrate");
+const errorHandler = require("./middlewares/error-handler");
+
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const routes = require("./routes");
@@ -44,13 +45,13 @@ const routes = require("./routes");
 const app = express();
 
 // Define your CORS options
-const corsOptions = {
-  origin: ["https://wtwr.yote.me", "http://localhost:3000"],
-  optionsSuccessStatus: 200,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: ["https://wtwr.yote.me", "http://localhost:3000"],
+//   optionsSuccessStatus: 200,
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   credentials: true,
+// };
 
 // Use CORS with options
 app.use(cors());

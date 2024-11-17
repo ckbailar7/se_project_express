@@ -6,17 +6,24 @@ const { createUser, login } = require("../controllers/users");
 
 const ERRORS = require("../utils/errors");
 
+const {
+  validateUserSignin,
+  validateUserSignup,
+} = require("../middlewares/validation");
+
 // ROUTES NOT NEEDING PROTECTION
-router.post("/signin", login);
-router.post("/signup", createUser);
+router.post("/signin", validateUserSignin, login);
+router.post("/signup", validateUserSignup, createUser);
 
 // ROUTES NEEDING PROTECTION
 // router.use(auth);
 router.use("/users", users);
 router.use("/items", clothingItems);
 
-router.use((req, res) => {
-  res.status(ERRORS.NOT_FOUND.STATUS).send({ message: "Route not found" });
+router.use((req, res, next) => {
+  const error = new Error(ERRORS.NOT_FOUND.DEFAULT_MESSAGE);
+  error.statusCode = ERRORS.NOT_FOUND.STATUS;
+  return next(error);
 });
 
 module.exports = router;
