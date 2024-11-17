@@ -1,12 +1,9 @@
 const mongoose = require("mongoose");
 const BadRequestError = require("../utils/errorClasses/BadRequestError");
-// const ConflictError = require("../utils/errorClasses/ConflictError.js");
 const ForbiddenError = require("../utils/errorClasses/ForbiddenError");
 const NotFoundError = require("../utils/errorClasses/NotFoundError");
-// const UnauthorizedError = require("../utils/errorClasses/UnauthorizedError");
 
 const ClothingItem = require("../models/clothingItem");
-// const ERRORS = require("../utils/errors");
 
 module.exports.getClothingItems = (req, res, next) => {
   ClothingItem.find({})
@@ -37,15 +34,11 @@ module.exports.createClothingItem = (req, res, next) => {
 };
 
 module.exports.deleteClothingItem = (req, res, next) => {
-  // const { clothingId } = req.params;
-
   const currentUser = req.user;
 
-  // Extract the item ID from req.params
   const { itemId } = req.params;
 
   if (!mongoose.isValidObjectId(itemId) || !itemId) {
-    // if response needed is not found
     throw new BadRequestError("Invalid request");
   }
 
@@ -69,7 +62,6 @@ module.exports.deleteClothingItem = (req, res, next) => {
           res.status(200).send({ message: "Item Deleted Successfully" }),
         )
         .catch((err) => {
-          // console.error(err);
           if (err.name === "CastError") {
             next(new BadRequestError("Invalid request"));
           } else if (err.name === "DocumentNotFoundError") {
@@ -80,7 +72,6 @@ module.exports.deleteClothingItem = (req, res, next) => {
         });
     })
     .catch((err) => {
-      // console.error(err);
       if (err.name === "DocumentNotFoundError") {
         next(new NotFoundError("Not found"));
       } else {
