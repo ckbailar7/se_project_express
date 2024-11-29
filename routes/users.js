@@ -13,9 +13,6 @@ router.patch(
   "/me",
   auth,
   celebrate({ body: updateUserProfileSchema }),
-  (req, res, next) => {
-    next();
-  },
   updateUserProfile,
 );
 
