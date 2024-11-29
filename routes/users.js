@@ -12,11 +12,11 @@ router.get("/me", auth, getUser);
 router.patch(
   "/me",
   auth,
-  // celebrate({ body: updateUserProfileSchema }),
-  //(req, res, next) => {
-  //   console.log("PATCH request to /users/me recieved data: ", req.body);
-  //  next();
-  //},
+  celebrate({ body: updateUserProfileSchema }),
+  (req, res, next) => {
+    console.log("PATCH request to /users/me recieved data: ", req.body);
+    next();
+  },
   updateUserProfile,
 );
 
