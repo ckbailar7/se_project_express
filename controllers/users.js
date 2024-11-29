@@ -45,7 +45,7 @@ module.exports.updateUserProfile = (req, res, next) => {
         return next(new NotFoundError("User not found"));
       }
       console.log("User Updated:", updatedUser);
-      res.status(200).send(updatedUser);
+      return res.status(200).send(updatedUser);
     })
     .catch((err) => {
       console.error("Error during update : ", err);
