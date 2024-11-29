@@ -26,6 +26,10 @@ module.exports.getUser = (req, res, next) => {
 
 module.exports.updateUserProfile = (req, res, next) => {
   console.log("Reached updateUserProfile handler");
+  console.log(
+    "Req.user not recognized logging undefined >>>>> req.user._id",
+    req.user._id,
+  );
   const { name, avatar } = req.body;
   const userId = req.user._id;
   console.log("Updating user: ", { userId, name, avatar });
