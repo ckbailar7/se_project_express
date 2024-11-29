@@ -27,7 +27,7 @@ module.exports.getUser = (req, res, next) => {
 module.exports.updateUserProfile = (req, res, next) => {
   console.log("Reached updateUserProfile handler");
   const { name, avatar } = req.body;
-  const userId = req.user.id;
+  const userId = req.user._id;
   console.log("Updating user: ", { userId, name, avatar });
 
   User.findByIdAndUpdate(
