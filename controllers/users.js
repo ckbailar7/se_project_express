@@ -9,7 +9,6 @@ const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 
 module.exports.getUser = (req, res, next) => {
-  console.log(req.user._id);
   User.findById(req.user._id)
     .orFail()
     .then((user) => res.status(200).send(user))
@@ -25,14 +24,8 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.updateUserProfile = (req, res, next) => {
-  console.log("Reached updateUserProfile handler");
-  console.log(
-    "Req.user not recognized logging undefined >>>>> req.user._id",
-    req.user._id,
-  );
   const { name, avatar } = req.body;
   const userId = req.user._id;
-  console.log("Updating user: ", { userId, name, avatar });
 
   User.findByIdAndUpdate(
     userId,
@@ -41,14 +34,11 @@ module.exports.updateUserProfile = (req, res, next) => {
   )
     .then((updatedUser) => {
       if (!updatedUser) {
-        console.log("User not found", updatedUser);
         return next(new NotFoundError("User not found"));
       }
-      console.log("User Updated:", updatedUser);
       return res.status(200).send(updatedUser);
     })
     .catch((err) => {
-      console.error("Error during update : ", err);
       if (err.name === "ValidationError") {
         next(new BadRequestError("Validation Error"));
       } else {
@@ -107,7 +97,6 @@ module.exports.login = (req, res, next) => {
 
     .then((user) => {
       // user Authentication successfull!!
-      console.log("User for JWT signing:", user);
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
